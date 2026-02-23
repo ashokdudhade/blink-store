@@ -55,10 +55,10 @@ Or use `cpuset` for pinning to particular cores.
 - Use `--log-dir /path/to/logs` to write rolling log files.
 - Use `--retention-minutes 60` so a background task prunes log files older than 60 minutes.
 
-Example:
+Example (install server first: `./scripts/install-from-github.sh ./bin`):
 
 ```bash
-./dist/blink-store serve --tcp 0.0.0.0:8765 \
+./bin/blink-store serve --tcp 0.0.0.0:8765 \
   --memory-limit 10485760 \
   --log-dir /var/log/blink-store \
   --retention-minutes 1440

@@ -22,8 +22,8 @@
 ## Quick start
 
 ```bash
-./scripts/build-dist.sh
-./dist/blink-store serve --tcp 127.0.0.1 8765
+./scripts/install-from-github.sh ./bin
+./bin/blink-store serve --tcp 127.0.0.1 8765
 ```
 
 Then connect with any client. The rest of this book covers installation, protocol, language guides, and deployment.

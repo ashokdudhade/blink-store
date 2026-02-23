@@ -4,13 +4,13 @@ Blink-Store is protocol-first: any language that can open a TCP (or Unix) socket
 
 ## Prerequisites
 
-1. Build a local distribution (or use `cargo run` for Rust examples):
+1. Install the latest server from GitHub (or use `./scripts/build-dist.sh` for a local build):
    ```bash
-   ./scripts/build-dist.sh
+   ./scripts/install-from-github.sh ./bin
    ```
 2. Start the server:
    ```bash
-   ./dist/blink-store serve --tcp 127.0.0.1 8765
+   ./bin/blink-store serve --tcp 127.0.0.1 8765
    ```
 
 ## REPL clients
@@ -19,7 +19,7 @@ Interactive clients that send one command per line (GET, SET, DELETE, USAGE, QUI
 
 | Language | Command |
 |----------|---------|
-| **Rust** | `./dist/blink_client --tcp 127.0.0.1:8765` |
+| **Rust** | `cargo run --example blink_client -- --tcp 127.0.0.1:8765` (or `./dist/blink_client` if you ran `build-dist.sh`) |
 | **Python** | `python examples/clients/python/blink_client.py` |
 | **Node.js** | `node examples/clients/node/blink_client.js` |
 | **Go** | `go run examples/clients/go/blink_client.go` |
@@ -33,7 +33,7 @@ Minimal HTTP servers that use Blink-Store as a cache: `GET /<key>` returns the v
 
 | Language | Command |
 |----------|---------|
-| **Rust** | `./dist/backend_http --store 127.0.0.1:8765 --port 8080` |
+| **Rust** | `cargo run --example backend_http -- --store 127.0.0.1:8765 --port 8080` (or `./dist/backend_http` if you ran `build-dist.sh`) |
 | **Python** | `BLINK_STORE=127.0.0.1:8765 python examples/clients/python/backend_app.py` |
 | **Node.js** | `BLINK_STORE=127.0.0.1:8765 node examples/clients/node/backend_app.js` |
 | **Go** | `BLINK_STORE=127.0.0.1:8765 go run examples/clients/go/backend_app.go` |

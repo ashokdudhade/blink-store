@@ -1,27 +1,63 @@
 #!/usr/bin/env bash
 # Quick test that all REPL clients and backends work. Run from repo root.
-# Uses dist/ binaries if present (after ./scripts/build-dist.sh), else debug build.
+# Prefers: ./bin/blink-store (from install-from-github.sh), then dist/, then target build.
 set -e
 cd "$(dirname "$0")/.."
 BLINK_PORT=39999
 HTTP_PORT=39998
 
-# Prefer distribution binaries when present
-if [[ -x ./dist/blink-store ]] || [[ -f ./dist/blink-store.exe ]]; then
+# Prefer GitHub-installed server, then dist, then target; Rust client/backend only in dist or target
+if [[ -x ./bin/blink-store ]] || [[ -f ./bin/blink-store.exe ]]; then
+  BLINK_BIN=./bin/blink-store
+  [[ -f ./bin/blink-store.exe ]] && BLINK_BIN=./bin/blink-store.exe
+fi
+if [[ -z "$BLINK_BIN" ]] && { [[ -x ./dist/blink-store ]] || [[ -f ./dist/blink-store.exe ]]; }; then
   BLINK_BIN=./dist/blink-store
+  [[ -f ./dist/blink-store.exe ]] && BLINK_BIN=./dist/blink-store.exe
+fi
+if [[ -x ./dist/blink_client ]] || [[ -f ./dist/blink_client.exe ]]; then
   RUST_CLIENT=./dist/blink_client
   RUST_BACKEND=./dist/backend_http
-  [[ -f ./dist/blink-store.exe ]] && BLINK_BIN=./dist/blink-store.exe
   [[ -f ./dist/blink_client.exe ]] && RUST_CLIENT=./dist/blink_client.exe
   [[ -f ./dist/backend_http.exe ]] && RUST_BACKEND=./dist/backend_http.exe
 elif [[ -x ./target/release/blink-store ]] || [[ -f ./target/release/blink-store.exe ]]; then
+  [[ -z "$BLINK_BIN" ]] && BLINK_BIN=./target/release/blink-store
+  [[ -z "$BLINK_BIN" ]] && [[ -f ./target/release/blink-store.exe ]] && BLINK_BIN=./target/release/blink-store.exe
+  RUST_CLIENT=./target/release/examples/blink_client
+  RUST_BACKEND=./target/release/examples/backend_http
+  [[ -f ./target/release/examples/blink_client.exe ]] && RUST_CLIENT=./target/release/examples/blink_client.exe
+  [[ -f ./target/release/examples/backend_http.exe ]] && RUST_BACKEND=./target/release/examples/backend_http.exe
+fi
+if [[ -z "$BLINK_BIN" ]]; then
   BLINK_BIN=./target/release/blink-store
   RUST_CLIENT=./target/release/examples/blink_client
   RUST_BACKEND=./target/release/examples/backend_http
   [[ -f ./target/release/blink-store.exe ]] && BLINK_BIN=./target/release/blink-store.exe
   [[ -f ./target/release/examples/blink_client.exe ]] && RUST_CLIENT=./target/release/examples/blink_client.exe
   [[ -f ./target/release/examples/backend_http.exe ]] && RUST_BACKEND=./target/release/examples/backend_http.exe
-else
+fi
+if [[ -z "$RUST_CLIENT" ]] && { [[ -x ./target/release/blink-store ]] || [[ -f ./target/release/blink-store.exe ]]; }; then
+  RUST_CLIENT=./target/release/examples/blink_client
+  RUST_BACKEND=./target/release/examples/backend_http
+  [[ -f ./target/release/examples/blink_client.exe ]] && RUST_CLIENT=./target/release/examples/blink_client.exe
+  [[ -f ./target/release/examples/backend_http.exe ]] && RUST_BACKEND=./target/release/examples/backend_http.exe
+elif [[ -z "$RUST_CLIENT" ]]; then
+  RUST_CLIENT=./target/debug/examples/blink_client
+  RUST_BACKEND=./target/debug/examples/backend_http
+  [[ -f ./target/debug/examples/blink_client.exe ]] && RUST_CLIENT=./target/debug/examples/blink_client.exe
+  [[ -f ./target/debug/examples/backend_http.exe ]] && RUST_BACKEND=./target/debug/examples/backend_http.exe
+fi
+if [[ -z "$BLINK_BIN" ]]; then
+  BLINK_BIN=./target/release/blink-store
+  [[ -f ./target/release/blink-store.exe ]] && BLINK_BIN=./target/release/blink-store.exe
+fi
+if [[ -z "$RUST_CLIENT" ]]; then
+  RUST_CLIENT=./target/release/examples/blink_client
+  RUST_BACKEND=./target/release/examples/backend_http
+  [[ -f ./target/release/examples/blink_client.exe ]] && RUST_CLIENT=./target/release/examples/blink_client.exe
+  [[ -f ./target/release/examples/backend_http.exe ]] && RUST_BACKEND=./target/release/examples/backend_http.exe
+fi
+if [[ -z "$BLINK_BIN" ]] || [[ -z "$RUST_CLIENT" ]]; then
   BLINK_BIN=./target/debug/blink-store
   RUST_CLIENT=./target/debug/examples/blink_client
   RUST_BACKEND=./target/debug/examples/backend_http

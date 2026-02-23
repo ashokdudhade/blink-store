@@ -1,16 +1,16 @@
 # Quickstart by language
 
-Start the server first (from repo root):
+Start the server first (from repo root; uses latest from GitHub):
 
 ```bash
-./scripts/build-dist.sh && ./dist/blink-store serve --tcp 127.0.0.1 8765
+./scripts/install-from-github.sh ./bin && ./bin/blink-store serve --tcp 127.0.0.1 8765
 ```
 
 Then in another terminal:
 
 | Language | One-liner |
 |----------|-----------|
-| **Rust** | `./dist/blink_client --tcp 127.0.0.1:8765` |
+| **Rust** | `cargo run --example blink_client -- --tcp 127.0.0.1:8765` |
 | **Python** | `python examples/clients/python/blink_client.py` |
 | **Node** | `node examples/clients/node/blink_client.js` |
 | **Go** | `go run examples/clients/go/blink_client.go` |

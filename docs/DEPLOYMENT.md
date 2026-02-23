@@ -14,9 +14,9 @@ See `docker-compose.yaml` for memory limits (default 32M cap, 8M reserved). Adju
 - **Memory**: Use `--memory-limit` (bytes) to cap store size. In Docker, set `deploy.resources.limits.memory` to avoid container OOM.
 - **CPU**: Optional `cpuset` or `cpus` in docker-compose for pinning.
 
-## Local distribution
+## Install from GitHub (latest)
 
 ```bash
-./scripts/build-dist.sh
-./dist/blink-store serve --tcp 0.0.0.0:8765 --memory-limit 10485760
+./scripts/install-from-github.sh ./bin
+./bin/blink-store serve --tcp 0.0.0.0:8765 --memory-limit 10485760
 ```
