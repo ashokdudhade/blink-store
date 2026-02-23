@@ -3,9 +3,7 @@
 
 services:
   blink-store:
-    build: .
-    image: blink-store:latest
-    command: ["serve", "--tcp", "0.0.0.0:8765", "--memory-limit", "10485760", "--retention-minutes", "60"]
+    image: ghcr.io/ashokdudhade/blink-store:latest
     ports:
       - "8765:8765"
     # Optional: persist logs

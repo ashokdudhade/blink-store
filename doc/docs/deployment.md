@@ -48,13 +48,13 @@ docker run -d --name blink-store \
   ghcr.io/ashokdudhade/blink-store:latest
 ```
 
-Or build from a Dockerfile (no Git clone):
+Or build a local image (downloads the pre-built binary from GitHub Releases — no Rust toolchain needed):
 
 ```bash
 curl -sSLf -o Dockerfile \
   https://raw.githubusercontent.com/ashokdudhade/blink-store/main/Dockerfile
-docker build -t blink-store .
-docker run -d -p 8765:8765 blink-store serve --tcp 0.0.0.0:8765
+docker build --build-arg BLINK_VERSION=latest -t blink-store .
+docker run -d -p 8765:8765 blink-store
 ```
 
 ### Docker Compose
@@ -62,10 +62,11 @@ docker run -d -p 8765:8765 blink-store serve --tcp 0.0.0.0:8765
 ```yaml
 services:
   blink-store:
-    build: .
-    command: ["serve", "--tcp", "0.0.0.0:8765", "--memory-limit", "10485760"]
+    image: ghcr.io/ashokdudhade/blink-store:latest
     ports:
       - "8765:8765"
+    environment:
+      - BLINK_MEMORY_LIMIT=10485760
     deploy:
       resources:
         limits:

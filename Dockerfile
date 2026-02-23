@@ -1,13 +1,18 @@
-FROM rust:1-alpine AS builder
-RUN apk add --no-cache musl-dev
-WORKDIR /app
-COPY Cargo.toml Cargo.lock* ./
-COPY src ./src
-RUN cargo build --release && strip target/release/blink-store
-
 FROM alpine:3
-RUN apk add --no-cache tini
-COPY --from=builder /app/target/release/blink-store /usr/local/bin/
+
+ARG TARGETARCH
+ARG BLINK_VERSION=latest
+
+RUN apk add --no-cache tini curl \
+    && case "${TARGETARCH}" in \
+         amd64) TRIPLE="x86_64-unknown-linux-musl" ;; \
+         arm64) TRIPLE="aarch64-unknown-linux-musl" ;; \
+         *) echo "unsupported arch: ${TARGETARCH}" && exit 1 ;; \
+       esac \
+    && curl -sSLf -o /usr/local/bin/blink-store \
+       "https://github.com/ashokdudhade/blink-store/releases/download/${BLINK_VERSION}/blink-store-${TRIPLE}" \
+    && chmod +x /usr/local/bin/blink-store \
+    && apk del curl
 
 ENV BLINK_PORT=8765
 ENV BLINK_MEMORY_LIMIT=10485760

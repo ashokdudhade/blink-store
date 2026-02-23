@@ -84,13 +84,13 @@ docker run -p 9000:9000 \
   ghcr.io/ashokdudhade/blink-store:latest
 ```
 
-Or build from a Dockerfile (no clone):
+Or build a local image from the Dockerfile (downloads the pre-built binary from GitHub Releases):
 
 ```bash
 curl -sSLf -o Dockerfile \
   https://raw.githubusercontent.com/ashokdudhade/blink-store/main/Dockerfile
-docker build -t blink-store .
-docker run -p 8765:8765 blink-store serve --tcp 0.0.0.0:8765
+docker build --build-arg BLINK_VERSION=latest -t blink-store .
+docker run -p 8765:8765 blink-store
 ```
 
 ---
