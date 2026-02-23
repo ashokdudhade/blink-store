@@ -3,6 +3,7 @@ title = "Blink-Store"
 authors = ["Blink-Store contributors"]
 language = "en"
 src = "src"
+description = "In-memory key-value store with LRU eviction and a simple TCP/Unix protocol"
 
 [build]
 build-dir = "book"
@@ -10,7 +11,11 @@ create-missing = true
 
 [output.html]
 default-theme = "rust"
+preferred-dark-theme = "navy"
 site-url = "https://ashokdudhade.github.io/blink-store/"
+additional-css = ["src/css/custom.css"]
+git-repository-url = "https://github.com/ashokdudhade/blink-store"
+edit-url-template = "https://github.com/ashokdudhade/blink-store/edit/main/doc/src/{path}"
 
 [output.html.search]
 limit-results = 15
