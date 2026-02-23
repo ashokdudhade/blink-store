@@ -1,3 +1,7 @@
+---
+title: Shell (Bash)
+---
+
 # Shell (Bash)
 
 Connect to Blink-Store from bash using built-in `/dev/tcp` — no external tools needed beyond `base64`.
@@ -8,7 +12,7 @@ Connect to Blink-Store from bash using built-in `/dev/tcp` — no external tools
 
 - Bash 4+
 - `base64` command (pre-installed on most systems)
-- Blink-Store server running ([Installation](../installation.md))
+- Blink-Store server running ([Installation](../installation))
 
 ---
 

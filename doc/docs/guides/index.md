@@ -1,6 +1,12 @@
+---
+sidebar_position: 4
+title: Language Guides
+slug: /guides/
+---
+
 # Language Guides
 
-Blink-Store speaks a plain-text [protocol](protocol.md) over TCP. Any language with socket support can connect — no SDK, no driver, no library to install.
+Blink-Store speaks a plain-text [protocol](../protocol) over TCP. Any language with socket support can connect — no SDK, no driver, no library to install.
 
 Each guide below includes a complete, copy-paste interactive client, a one-off command helper, and language-specific tips.
 
@@ -10,17 +16,17 @@ Each guide below includes a complete, copy-paste interactive client, a one-off c
 
 | Language | Guide | Dependencies |
 |----------|-------|-------------|
-| **Python** | [Python guide](guides/python.md) | Standard library only |
-| **Node.js** | [Node.js guide](guides/nodejs.md) | Standard library only |
-| **Go** | [Go guide](guides/go.md) | Standard library only |
-| **Shell** | [Shell (Bash) guide](guides/shell.md) | `bash` + `base64` |
-| **Rust** | [Rust guide](guides/rust.md) | `base64` crate |
+| **Python** | [Python guide](python) | Standard library only |
+| **Node.js** | [Node.js guide](nodejs) | Standard library only |
+| **Go** | [Go guide](go) | Standard library only |
+| **Shell** | [Shell (Bash) guide](shell) | `bash` + `base64` |
+| **Rust** | [Rust guide](rust) | `base64` crate |
 
 ---
 
 ## HTTP backends
 
-Want to use Blink-Store as a cache behind your HTTP API? See the [HTTP Backend Pattern](guides/http-backend.md) for complete server examples in Python and Node.js.
+Want to use Blink-Store as a cache behind your HTTP API? See the [HTTP Backend Pattern](http-backend) for complete server examples in Python and Node.js.
 
 ---
 
@@ -33,7 +39,7 @@ Blink-Store works with any language that can:
 3. Read a line of text back
 4. Decode base64
 
-See the [Protocol Reference](protocol.md) for the full specification. Here's the pattern in pseudocode:
+See the [Protocol Reference](../protocol) for the full specification. Here's the pattern in pseudocode:
 
 ```text
 sock = tcp_connect("127.0.0.1", 8765)

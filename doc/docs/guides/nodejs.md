@@ -1,3 +1,7 @@
+---
+title: Node.js
+---
+
 # Node.js
 
 Connect to Blink-Store from Node.js using the built-in `net` module — no npm packages needed.
@@ -7,7 +11,7 @@ Connect to Blink-Store from Node.js using the built-in `net` module — no npm p
 ## Prerequisites
 
 - Node.js 14+
-- Blink-Store server running ([Installation](../installation.md))
+- Blink-Store server running ([Installation](../installation))
 
 ---
 

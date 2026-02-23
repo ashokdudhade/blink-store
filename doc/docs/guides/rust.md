@@ -1,3 +1,7 @@
+---
+title: Rust
+---
+
 # Rust
 
 Connect to Blink-Store from Rust using the standard library plus the `base64` crate.
@@ -8,7 +12,7 @@ Connect to Blink-Store from Rust using the standard library plus the `base64` cr
 
 - Rust 1.70+ (install from [rustup.rs](https://rustup.rs))
 - `base64 = "0.22"` in `Cargo.toml`
-- Blink-Store server running ([Installation](../installation.md))
+- Blink-Store server running ([Installation](../installation))
 
 ---
 

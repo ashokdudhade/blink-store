@@ -1,3 +1,8 @@
+---
+sidebar_position: 3
+title: Protocol Reference
+---
+
 # Protocol Reference
 
 Blink-Store uses a **line-based text protocol** over TCP or Unix sockets.

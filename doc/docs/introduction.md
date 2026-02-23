@@ -1,8 +1,12 @@
+---
+sidebar_position: 1
+title: Introduction
+slug: /introduction
+---
+
 # Blink-Store
 
 > In-memory key-value store. Single binary. Any language.
-
----
 
 Blink-Store is an in-memory key-value store built in Rust. It ships as a single binary with no runtime dependencies — download it, run it, and connect from any language over TCP.
 
@@ -44,7 +48,9 @@ echo "USAGE"          | nc 127.0.0.1 8765    # → USAGE 9
 echo "DELETE user"    | nc 127.0.0.1 8765    # → OK
 ```
 
-> `VALUE` responses are base64-encoded. Decode: `echo YWxpY2U= | base64 -d` → `alice`.
+:::tip
+`VALUE` responses are base64-encoded. Decode: `echo YWxpY2U= | base64 -d` → `alice`.
+:::
 
 ---
 
@@ -60,7 +66,7 @@ Five commands. That's the entire API.
 | `USAGE` | `USAGE` | `USAGE 9` |
 | `QUIT` | `QUIT` | *(connection closed)* |
 
-Full specification: [Protocol Reference](protocol.md).
+Full specification: [Protocol Reference](protocol).
 
 ---
 
@@ -92,14 +98,3 @@ Full specification: [Protocol Reference](protocol.md).
 - **Sidecar cache** — Run alongside your application for low-latency caching without network hops to an external service.
 - **CI/CD ephemeral store** — Spin up a cache in your test pipeline with a single command. Tear it down when done.
 - **Prototyping** — Add caching to any project in minutes. The protocol is simple enough to implement inline.
-
----
-
-## What's in this documentation
-
-| Page | What you'll find |
-|------|-----------------|
-| [Installation](installation.md) | Install with `curl`, direct download, Docker, or build from source. |
-| [Protocol Reference](protocol.md) | Complete command and response specification with examples. |
-| [Language Guides](language-guides.md) | Copy-paste clients for Python, Node.js, Go, Bash, and Rust. HTTP backend pattern. |
-| [Deployment](deployment.md) | Docker Compose, resource limits, logging, health checks, production checklist. |

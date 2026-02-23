@@ -1,3 +1,8 @@
+---
+sidebar_position: 5
+title: Deployment
+---
+
 # Deployment
 
 This page covers running Blink-Store in production: standalone, Docker, resource limits, and logging.
@@ -6,7 +11,7 @@ This page covers running Blink-Store in production: standalone, Docker, resource
 
 ## Standalone
 
-Install the latest binary (see [Installation](installation.md)) and run:
+Install the latest binary (see [Installation](installation)) and run:
 
 ```bash
 ./blink-store serve --tcp 0.0.0.0:8765 --memory-limit 10485760

@@ -1,3 +1,8 @@
+---
+sidebar_position: 2
+title: Installation
+---
+
 # Installation
 
 No Git clone required. Pick the method that suits your environment.

@@ -1,3 +1,7 @@
+---
+title: Python
+---
+
 # Python
 
 Connect to Blink-Store from Python using the standard library — no third-party packages needed.
@@ -7,7 +11,7 @@ Connect to Blink-Store from Python using the standard library — no third-party
 ## Prerequisites
 
 - Python 3.6+
-- Blink-Store server running ([Installation](../installation.md))
+- Blink-Store server running ([Installation](../installation))
 
 ---
 

@@ -1,3 +1,7 @@
+---
+title: HTTP Backend Pattern
+---
+
 # HTTP Backend Pattern
 
 Use Blink-Store as a cache behind your HTTP API. This pattern works in any language: your HTTP handler opens a TCP connection to Blink-Store, sends a command, reads the response, and returns it to the HTTP client.
