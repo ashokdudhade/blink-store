@@ -1,54 +1,122 @@
 # Installation
 
-## From GitHub release
+No Git clone required. Pick the method that suits your environment.
 
-Download the binary for your OS/arch (no Rust required). Default is the **latest** release; pass a version tag to pin (e.g. `v0.1.0`).
+---
+
+## Option 1 — Install script (recommended)
+
+Downloads the correct binary for your OS and architecture automatically.
+
+**One-liner (Linux / macOS):**
 
 ```bash
-./scripts/install-from-github.sh ./bin
-# or pin version: ./scripts/install-from-github.sh v0.1.0 ./bin
-./bin/blink-store serve --tcp 127.0.0.1 8765
+curl -sSLf https://raw.githubusercontent.com/ashokdudhade/blink-store/main/scripts/install-from-github.sh \
+  | bash -s -- latest ./bin
 ```
 
-Or without cloning: fetch [install-from-github.sh](https://github.com/ashokdudhade/blink-store/blob/main/scripts/install-from-github.sh) and run `./install-from-github.sh ./bin` (or `./install-from-github.sh v0.1.0 ./bin` to fix version). Supported: Linux (x86_64, aarch64), macOS (x86_64, arm64), Windows (x86_64).
-
-## From source (Rust)
-
-Install Rust from [rustup](https://rustup.rs), then:
+**Pin to a specific version:**
 
 ```bash
-git clone https://github.com/ashokdudhade/blink-store
-cd blink-store
-cargo build --release
+curl -sSLf https://raw.githubusercontent.com/ashokdudhade/blink-store/main/scripts/install-from-github.sh \
+  | bash -s -- v0.1.0 ./bin
 ```
 
-Binary: `target/release/blink-store`. Run `./target/release/blink-store --help`.
-
-## Local distribution
+The binary is saved to `./bin/blink-store`. Start the server:
 
 ```bash
-./scripts/build-dist.sh
+./bin/blink-store serve --tcp 127.0.0.1:8765
 ```
 
-This creates `dist/blink-store`, `dist/blink_client`, and `dist/backend_http`. Then:
+| Platform | Architecture |
+|----------|-------------|
+| Linux    | x86_64, aarch64 |
+| macOS    | x86_64, arm64 (Apple Silicon) |
+| Windows  | x86_64 |
 
+---
+
+## Option 2 — Direct binary download
+
+If you prefer a single `curl` command without the install script:
+
+**Linux x86_64:**
 ```bash
-./dist/blink-store serve --tcp 127.0.0.1 8765
+curl -sSLf -o blink-store \
+  https://github.com/ashokdudhade/blink-store/releases/download/latest/blink-store-x86_64-unknown-linux-gnu
+chmod +x blink-store
 ```
 
-## Docker
-
+**macOS arm64 (Apple Silicon):**
 ```bash
-docker compose up -d
+curl -sSLf -o blink-store \
+  https://github.com/ashokdudhade/blink-store/releases/download/latest/blink-store-aarch64-apple-darwin
+chmod +x blink-store
 ```
 
-Server listens on port 8765. Or build and run manually:
+**Windows x86_64 (PowerShell):**
+```powershell
+curl -o blink-store.exe `
+  https://github.com/ashokdudhade/blink-store/releases/download/latest/blink-store-x86_64-pc-windows-msvc.exe
+```
+
+Replace `latest` in the URL with a version tag (e.g. `v0.1.0`) to pin.
+
+---
+
+## Option 3 — Docker
 
 ```bash
+docker run -p 8765:8765 ghcr.io/ashokdudhade/blink-store:latest \
+  serve --tcp 0.0.0.0:8765
+```
+
+Or build from a Dockerfile (no clone):
+
+```bash
+curl -sSLf -o Dockerfile \
+  https://raw.githubusercontent.com/ashokdudhade/blink-store/main/Dockerfile
 docker build -t blink-store .
 docker run -p 8765:8765 blink-store serve --tcp 0.0.0.0:8765
 ```
 
-## Verify
+---
 
-Start the server, then use any client (e.g. `python examples/clients/python/blink_client.py` or `cargo run --example blink_client -- --tcp 127.0.0.1:8765`). Server: `./bin/blink-store serve --tcp 127.0.0.1 8765`. Try: `SET hello world`, `GET hello`, `QUIT`.
+## Option 4 — Build from source
+
+For contributors or custom builds. Requires [Rust](https://rustup.rs/).
+
+```bash
+git clone https://github.com/ashokdudhade/blink-store.git
+cd blink-store
+cargo build --release
+./target/release/blink-store serve --tcp 127.0.0.1:8765
+```
+
+---
+
+## Verify the installation
+
+With the server running, open a second terminal:
+
+```bash
+echo "SET hello world" | nc 127.0.0.1 8765
+# → OK
+
+echo "GET hello" | nc 127.0.0.1 8765
+# → VALUE d29ybGQ=
+
+echo "d29ybGQ=" | base64 -d
+# → world
+```
+
+---
+
+## Version pinning
+
+Every release is published with a permanent version tag (e.g. `v0.1.0`) **and** a moving `latest` tag that always points to the newest release.
+
+| Tag | Behavior |
+|-----|----------|
+| `latest` | Updated on every release. Always the newest binary. |
+| `v0.1.0`, `v0.2.0`, ... | Fixed. Never overwritten. Use these for reproducible deployments. |

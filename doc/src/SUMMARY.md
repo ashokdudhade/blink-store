@@ -1,11 +1,19 @@
 # Summary
 
-[Introduction](introduction.md) — What Blink-Store is and why use it.
+- [Introduction](introduction.md)
+- [Installation](installation.md)
+- [Protocol Reference](protocol.md)
 
-[Installation](installation.md) — Build from source, local distribution, and Docker.
+---
 
-[Protocol](protocol.md) — Line-based text protocol: commands, responses, and examples.
+- [Language Guides](language-guides.md)
+  - [Python](guides/python.md)
+  - [Node.js](guides/nodejs.md)
+  - [Go](guides/go.md)
+  - [Shell (Bash)](guides/shell.md)
+  - [Rust](guides/rust.md)
+  - [HTTP Backend Pattern](guides/http-backend.md)
 
-[Language Guides](language-guides.md) — Official clients and HTTP backends by language.
+---
 
-[Deployment](deployment.md) — Docker Compose and resource limits.
+- [Deployment](deployment.md)

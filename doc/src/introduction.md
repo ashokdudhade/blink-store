@@ -1,29 +1,105 @@
-# Introduction
+# Blink-Store
 
-**Blink-Store** is a small, fast in-memory key-value store with **LRU eviction** and a configurable **memory cap**. It uses a simple line-based protocol over TCP or Unix sockets, so you can use it from any language.
+> In-memory key-value store. Single binary. Any language.
 
-## Why Blink-Store
+---
 
-- **Embeddable or standalone** — Run as a sidecar, local cache, or network service.
-- **Memory-safe** — No unsafe code; strict size limits.
-- **Protocol-first** — One text protocol for every client.
-- **Multi-language** — Examples in Rust, Python, Node.js, Go, and Shell.
+Blink-Store is an in-memory key-value store built in Rust. It ships as a single binary with no runtime dependencies — download it, run it, and connect from any language over TCP.
 
-## Features
+It is designed for teams that need a **simple, fast local cache** without the overhead of Redis, Memcached, or an external service. Install in seconds, configure with flags, integrate with a few lines of socket code.
 
-| Feature | Description |
-|--------|-------------|
-| BlinkStorage trait | Abstraction for in-memory and future backends. |
-| LRU eviction | Least-recently-used keys evicted when over the byte limit. |
-| Size tracking | Stored size in bytes (key + value). |
-| TCP and Unix | Server listens on TCP and/or Unix socket. |
-| Logging | Structured tracing; optional log retention. |
+---
+
+## At a glance
+
+| | |
+|:---|:---|
+| **Single binary, zero config** | One `curl` command to install. One flag to start. No config files, no daemon setup, no package manager. |
+| **Works with every language** | Plain-text TCP protocol. If your language can open a socket and send a line of text, it can use Blink-Store. Clients shown for Python, Node.js, Go, Bash, and Rust. |
+| **Built-in memory management** | Set a byte limit with `--memory-limit`. Blink-Store tracks the size of every key and value and automatically evicts least-recently-used entries when the limit is reached. |
+| **Written in Rust** | No `unsafe` code in the library. Error handling with `Result` throughout — no panics in production paths. Structured logging via `tracing`. |
+| **Concurrent by design** | Storage backed by `DashMap` (lock-free concurrent hash map). Async I/O with Tokio. Each client connection is served on its own task. |
+| **Cross-platform** | Pre-built release binaries for Linux (x86_64, aarch64), macOS (x86_64, arm64), and Windows (x86_64). Also runs in Docker. |
+| **TCP and Unix sockets** | Listen on `--tcp`, `--unix`, or both at the same time. |
+
+---
 
 ## Quick start
 
+Install the latest release and start the server (no Git clone, no Rust toolchain):
+
 ```bash
-./scripts/install-from-github.sh ./bin
-./bin/blink-store serve --tcp 127.0.0.1 8765
+curl -sSLf https://raw.githubusercontent.com/ashokdudhade/blink-store/main/scripts/install-from-github.sh \
+  | bash -s -- latest ./bin
+
+./bin/blink-store serve --tcp 127.0.0.1:8765
 ```
 
-Then connect with any client. The rest of this book covers installation, protocol, language guides, and deployment.
+Talk to it from any terminal:
+
+```bash
+echo "SET user alice" | nc 127.0.0.1 8765    # → OK
+echo "GET user"       | nc 127.0.0.1 8765    # → VALUE YWxpY2U=
+echo "USAGE"          | nc 127.0.0.1 8765    # → USAGE 9
+echo "DELETE user"    | nc 127.0.0.1 8765    # → OK
+```
+
+> `VALUE` responses are base64-encoded. Decode: `echo YWxpY2U= | base64 -d` → `alice`.
+
+---
+
+## Protocol
+
+Five commands. That's the entire API.
+
+| Command | Example | Response |
+|---------|---------|----------|
+| `SET key value` | `SET user alice` | `OK` |
+| `GET key` | `GET user` | `VALUE YWxpY2U=` |
+| `DELETE key` | `DELETE user` | `OK` |
+| `USAGE` | `USAGE` | `USAGE 9` |
+| `QUIT` | `QUIT` | *(connection closed)* |
+
+Full specification: [Protocol Reference](protocol.md).
+
+---
+
+## How it works
+
+```text
+                      ┌─────────────────────────────┐
+  TCP / Unix socket   │         Blink-Store          │
+  ─────────────────→  │                               │
+                      │  ┌─────────┐   ┌───────────┐ │
+   SET / GET / DELETE  │  │ DashMap │ ← │ LRU Cache │ │
+  ←─────────────────  │  │ (store) │   │ (eviction)│ │
+                      │  └─────────┘   └───────────┘ │
+                      │       ↑                       │
+                      │  AtomicU64 (size tracking)    │
+                      └─────────────────────────────┘
+```
+
+- **DashMap** — concurrent hash map for key-value storage. Lock-free reads.
+- **LRU cache** — tracks access order. When `--memory-limit` is exceeded, the least-recently-used key is evicted.
+- **AtomicU64** — tracks total stored bytes (key length + value length) with atomic operations.
+- **Tokio** — async runtime. Each connection is a lightweight task.
+
+---
+
+## Use cases
+
+- **Local development cache** — Drop-in replacement for Redis/Memcached during development. No Docker, no config.
+- **Sidecar cache** — Run alongside your application for low-latency caching without network hops to an external service.
+- **CI/CD ephemeral store** — Spin up a cache in your test pipeline with a single command. Tear it down when done.
+- **Prototyping** — Add caching to any project in minutes. The protocol is simple enough to implement inline.
+
+---
+
+## What's in this documentation
+
+| Page | What you'll find |
+|------|-----------------|
+| [Installation](installation.md) | Install with `curl`, direct download, Docker, or build from source. |
+| [Protocol Reference](protocol.md) | Complete command and response specification with examples. |
+| [Language Guides](language-guides.md) | Copy-paste clients for Python, Node.js, Go, Bash, and Rust. HTTP backend pattern. |
+| [Deployment](deployment.md) | Docker Compose, resource limits, logging, health checks, production checklist. |

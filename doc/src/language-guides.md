@@ -1,56 +1,57 @@
-# Language guides
+# Language Guides
 
-Blink-Store is protocol-first: any language that can open a TCP (or Unix) socket and send/receive lines can talk to it. This page lists the official examples and how to run them.
+Blink-Store speaks a plain-text [protocol](protocol.md) over TCP. Any language with socket support can connect — no SDK, no driver, no library to install.
 
-## Prerequisites
+Each guide below includes a complete, copy-paste interactive client, a one-off command helper, and language-specific tips.
 
-1. Install the latest server from GitHub (or use `./scripts/build-dist.sh` for a local build):
-   ```bash
-   ./scripts/install-from-github.sh ./bin
-   ```
-2. Start the server:
-   ```bash
-   ./bin/blink-store serve --tcp 127.0.0.1 8765
-   ```
+---
 
-## REPL clients
+## Choose your language
 
-Interactive clients that send one command per line (GET, SET, DELETE, USAGE, QUIT).
+| Language | Guide | Dependencies |
+|----------|-------|-------------|
+| **Python** | [Python guide](guides/python.md) | Standard library only |
+| **Node.js** | [Node.js guide](guides/nodejs.md) | Standard library only |
+| **Go** | [Go guide](guides/go.md) | Standard library only |
+| **Shell** | [Shell (Bash) guide](guides/shell.md) | `bash` + `base64` |
+| **Rust** | [Rust guide](guides/rust.md) | `base64` crate |
 
-| Language | Command |
-|----------|---------|
-| **Rust** | `cargo run --example blink_client -- --tcp 127.0.0.1:8765` (or `./dist/blink_client` if you ran `build-dist.sh`) |
-| **Python** | `python examples/clients/python/blink_client.py` |
-| **Node.js** | `node examples/clients/node/blink_client.js` |
-| **Go** | `go run examples/clients/go/blink_client.go` |
-| **Shell** | `bash examples/clients/shell/blink_client.sh` |
-
-Default host is `127.0.0.1` and port `8765`; Python, Node, and Go accept optional `[host [port]]` arguments.
+---
 
 ## HTTP backends
 
-Minimal HTTP servers that use Blink-Store as a cache: `GET /<key>` returns the value; `POST /<key>` with body sets it. Set `BLINK_STORE=host:port` (default `127.0.0.1:8765`) and optionally `PORT` (default `8080`).
+Want to use Blink-Store as a cache behind your HTTP API? See the [HTTP Backend Pattern](guides/http-backend.md) for complete server examples in Python and Node.js.
 
-| Language | Command |
-|----------|---------|
-| **Rust** | `cargo run --example backend_http -- --store 127.0.0.1:8765 --port 8080` (or `./dist/backend_http` if you ran `build-dist.sh`) |
-| **Python** | `BLINK_STORE=127.0.0.1:8765 python examples/clients/python/backend_app.py` |
-| **Node.js** | `BLINK_STORE=127.0.0.1:8765 node examples/clients/node/backend_app.js` |
-| **Go** | `BLINK_STORE=127.0.0.1:8765 go run examples/clients/go/backend_app.go` |
+---
 
-Example with `curl`:
+## Any other language?
 
-```bash
-curl -X POST http://localhost:8080/foo -d 'hello'
-curl http://localhost:8080/foo
-# → hello
+Blink-Store works with any language that can:
+
+1. Open a TCP socket
+2. Send a line of text (UTF-8, `\n` terminated)
+3. Read a line of text back
+4. Decode base64
+
+See the [Protocol Reference](protocol.md) for the full specification. Here's the pattern in pseudocode:
+
+```text
+sock = tcp_connect("127.0.0.1", 8765)
+sock.send("SET mykey hello\n")
+response = sock.readline()          // "OK"
+
+sock.send("GET mykey\n")
+response = sock.readline()          // "VALUE aGVsbG8="
+value = base64_decode("aGVsbG8=")   // "hello"
 ```
 
-## Integration notes
-
-- **Node.js** — Use `net.Socket`; buffer incoming data and split on `\n`; decode `VALUE <base64>` with `Buffer.from(..., 'base64')`.
-- **Python** — Use `socket.socket` and `makefile('r')` for line reading; decode base64 with `base64.b64decode`.
-- **Rust** — Use `tokio::net::TcpStream` and `AsyncBufReadExt::read_line` for async line I/O.
-- **Go** — Use `net.Dial("tcp", addr)` and `bufio.ReadString('\n')`.
-
-For more detail and connection-pooling tips (e.g. Java/C#), see the repo: `docs/INTEGRATION_GUIDES.md`.
+| Language | Socket API | Line reading | Base64 decode |
+|----------|-----------|-------------|---------------|
+| Python   | `socket.socket()` | `.makefile('r').readline()` | `base64.b64decode()` |
+| Node.js  | `net.createConnection()` | Buffer + split on `\n` | `Buffer.from(b64, 'base64')` |
+| Go       | `net.Dial("tcp", addr)` | `bufio.ReadString('\n')` | `base64.StdEncoding.DecodeString()` |
+| Rust     | `TcpStream::connect()` | `BufReader::read_line()` | `base64::decode()` |
+| Java     | `new Socket(host, port)` | `BufferedReader.readLine()` | `Base64.getDecoder().decode()` |
+| C#       | `TcpClient` | `StreamReader.ReadLine()` | `Convert.FromBase64String()` |
+| Ruby     | `TCPSocket.new(host, port)` | `.gets` | `Base64.decode64()` |
+| PHP      | `fsockopen(host, port)` | `fgets()` | `base64_decode()` |
