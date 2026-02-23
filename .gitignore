@@ -5,6 +5,9 @@
 # Local distribution (build with scripts/build-dist.sh)
 /dist/
 
+# mdBook output
+/doc/book/
+
 # IDE / editor
 .idea/
 .vscode/

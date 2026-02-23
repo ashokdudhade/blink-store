@@ -1,0 +1,15 @@
+[book]
+title = "Blink-Store"
+authors = ["Blink-Store contributors"]
+language = "en"
+src = "src"
+
+[build]
+build-dir = "book"
+create-missing = true
+
+[output.html]
+default-theme = "rust"
+
+[output.html.search]
+limit-results = 15

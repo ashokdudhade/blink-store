@@ -27,4 +27,37 @@
 - [x] **Example Clients**:
     - Create a standard protocol (e.g., Simple Text or Protobuf) for client interactions.
     - Add all popular programming language examples (Rust, Python, Node.js, Go, Shell in `examples/clients/`).
-    - Add examples in such way that it shows usage in backend application (HTTP backends in Rust, Python, Node, Go that use Blink-Store as cache: `backend_http`, `backend_app.py`, `backend_app.js`, `backend_app.go`). 
+    - Add examples in such way that it shows usage in backend application (HTTP backends in Rust, Python, Node, Go that use Blink-Store as cache: `backend_http`, `backend_app.py`, `backend_app.js`, `backend_app.go`).
+
+
+## Phase 6: Documentation & Multi-Language Integration
+- [x] **Protocol Specification**:
+    - Document the TCP/Unix socket binary protocol (e.g., Header: 4-byte length, Payload: Command + Data).
+    - Detail all supported commands: `SET`, `GET`, `DEL`, `EXPIRE`, `STATS`.
+- [x] **Language-Specific Integration Guides**:
+    - **Node.js**: Example using `net.Socket` and Buffer handling.
+    - **Python**: Example using `socket` with context managers.
+    - **Java/C#**: Robust connection pooling examples.
+    - **Rust**: Using `tokio::net` for async-first integration.
+- [x] **Deployment Docs**:
+    - Docker `docker-compose.yaml` setup.
+    - Resource limit configuration (CPU/Memory pinning).
+- [x] **Developer Experience (DX)**:
+    - Create a "Quickstart" for each language in the `examples/` directory.
+    - Add a `CONTRIBUTING.md` for adding new language clients.
+
+## Phase 7: GitHub Docs & Hosting
+- [x] **Static Site Generator (SSG) Setup**:
+    - Initialize `mdBook` in a `/docs` directory (standard for Rust).
+    - Alternative: Setup `Docusaurus` if a more "marketing-style" landing page is needed.
+- [x] **GitHub Pages Integration**:
+    - Create a `.github/workflows/deploy-docs.yml` to auto-deploy on every push to `main`.
+    - Configure custom domain (blinkstore.dev or similar) if applicable.
+- [x] **Content Architecture**:
+    - **Home**: Project vision and performance benchmarks.
+    - **Installation**: OS-specific instructions (Brew, Choco, Apt).
+    - **Protocol**: Deep dive into the Blink binary wire format.
+    - **Language Guides**: Nested pages for Python, Node.js, Rust, Go, etc.
+- [x] **Search & Accessibility**:
+    - Enable `mdbook-search` for instant documentation lookups.
+    - Ensure code snippets use clear syntax highlighting for all example languages.
