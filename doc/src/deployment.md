@@ -29,8 +29,18 @@ Install the latest binary (see [Installation](installation.md)) and run:
 ```bash
 docker run -d --name blink-store \
   -p 8765:8765 \
-  ghcr.io/ashokdudhade/blink-store:latest \
-  serve --tcp 0.0.0.0:8765 --memory-limit 10485760
+  ghcr.io/ashokdudhade/blink-store:latest
+```
+
+Override defaults with environment variables:
+
+```bash
+docker run -d --name blink-store \
+  -p 9000:9000 \
+  -e BLINK_PORT=9000 \
+  -e BLINK_MEMORY_LIMIT=104857600 \
+  -e BLINK_RETENTION_MINUTES=1440 \
+  ghcr.io/ashokdudhade/blink-store:latest
 ```
 
 Or build from a Dockerfile (no Git clone):

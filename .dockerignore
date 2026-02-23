@@ -1,0 +1,9 @@
+target/
+doc/
+docs/
+examples/
+scripts/
+.git/
+.github/
+*.md
+LICENSE

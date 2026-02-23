@@ -1,13 +1,22 @@
-# Multi-stage build for small footprint
-FROM rust:1-slim-bookworm AS builder
+FROM rust:1-alpine AS builder
+RUN apk add --no-cache musl-dev
 WORKDIR /app
 COPY Cargo.toml Cargo.lock* ./
 COPY src ./src
-RUN cargo build --release
+RUN cargo build --release && strip target/release/blink-store
 
-# Runtime stage: minimal image
-FROM debian:bookworm-slim
-RUN apt-get update -y && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+FROM alpine:3
+RUN apk add --no-cache tini
 COPY --from=builder /app/target/release/blink-store /usr/local/bin/
-ENTRYPOINT ["/usr/local/bin/blink-store"]
-CMD ["run", "--memory-limit", "10485760", "--retention-minutes", "60"]
+
+ENV BLINK_PORT=8765
+ENV BLINK_MEMORY_LIMIT=10485760
+ENV BLINK_RETENTION_MINUTES=60
+
+EXPOSE ${BLINK_PORT}
+
+ENTRYPOINT ["tini", "--"]
+CMD sh -c 'exec blink-store serve \
+  --tcp "0.0.0.0:${BLINK_PORT}" \
+  --memory-limit "${BLINK_MEMORY_LIMIT}" \
+  --retention-minutes "${BLINK_RETENTION_MINUTES}"'

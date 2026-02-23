@@ -67,8 +67,16 @@ Replace `latest` in the URL with a version tag (e.g. `v0.1.0`) to pin.
 ## Option 3 — Docker
 
 ```bash
-docker run -p 8765:8765 ghcr.io/ashokdudhade/blink-store:latest \
-  serve --tcp 0.0.0.0:8765
+docker run -p 8765:8765 ghcr.io/ashokdudhade/blink-store:latest
+```
+
+Custom port and memory limit:
+
+```bash
+docker run -p 9000:9000 \
+  -e BLINK_PORT=9000 \
+  -e BLINK_MEMORY_LIMIT=104857600 \
+  ghcr.io/ashokdudhade/blink-store:latest
 ```
 
 Or build from a Dockerfile (no clone):
