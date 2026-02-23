@@ -16,12 +16,16 @@ Measured on a single persistent TCP connection, sequential operations, 10,000 op
 | **Kernel** | 6.6.87.2-microsoft-standard-WSL2 |
 | **Arch** | x86_64 |
 
-Results will vary by hardware and network stack. WSL2 adds a small overhead compared to bare-metal Linux due to the Hyper-V virtual network adapter.
+Results will vary by hardware and network stack.
 :::
 
 ---
 
-## Throughput
+## Native (no container)
+
+Server runs directly on the host. All cores and memory available.
+
+### Throughput
 
 | Operation | Value size | ops/sec |
 |-----------|-----------|---------|
@@ -31,26 +35,64 @@ Results will vary by hardware and network stack. WSL2 adds a small overhead comp
 | `GET` | — | ~11,100 |
 | `DELETE` | — | ~9,700 |
 
-Throughput is consistent across value sizes from 64 bytes to 1 KiB. `GET` is the fastest operation since it avoids the LRU bookkeeping write path.
-
----
-
-## Latency
-
-Measured per-operation on a single connection with 10,000 sequential samples (256-byte values).
+### Latency
 
 | Operation | avg | p50 | p95 | p99 | max |
 |-----------|-----|-----|-----|-----|-----|
 | `SET` | 106 us | 85 us | 207 us | 347 us | 5.97 ms |
 | `GET` | 91 us | 81 us | 151 us | 231 us | 906 us |
 
-Median latency is under **100 microseconds** for both reads and writes. The p99 stays under 350 us, with occasional outliers at the tail from OS scheduling and network jitter.
+---
+
+## Container (1 CPU, 2 GB memory)
+
+Server runs inside a container pulled from `ghcr.io/ashokdudhade/blink-store:latest`, restricted to 1 CPU and 2 GB memory via Podman/Docker resource limits.
+
+```bash
+podman run -d --name blink-store \
+  --cpus 1 --memory 2g \
+  -p 8765:8765 \
+  -e BLINK_MEMORY_LIMIT=2097152 \
+  ghcr.io/ashokdudhade/blink-store:latest
+```
+
+### Throughput
+
+| Operation | Value size | ops/sec |
+|-----------|-----------|---------|
+| `SET` | 64 bytes | ~4,430 |
+| `SET` | 256 bytes | ~4,930 |
+| `SET` | 1 KiB | ~4,100 |
+| `GET` | — | ~5,730 |
+| `DELETE` | — | ~5,900 |
+
+### Latency
+
+| Operation | avg | p50 | p95 | p99 | max |
+|-----------|-----|-----|-----|-----|-----|
+| `SET` | 204 us | 180 us | 328 us | 455 us | 966 us |
+| `GET` | 185 us | 167 us | 294 us | 398 us | 959 us |
+
+### Native vs. container comparison
+
+| Metric | Native | Container (1 CPU, 2 GB) | Overhead |
+|--------|--------|------------------------|----------|
+| SET 256B throughput | 9,600 ops/s | 4,930 ops/s | ~49% |
+| GET throughput | 11,100 ops/s | 5,730 ops/s | ~48% |
+| SET p50 latency | 85 us | 180 us | ~2.1x |
+| GET p50 latency | 81 us | 167 us | ~2.1x |
+| SET p95 latency | 207 us | 328 us | ~1.6x |
+| GET p95 latency | 151 us | 294 us | ~1.9x |
+| SET p99 latency | 347 us | 455 us | ~1.3x |
+| GET p99 latency | 231 us | 398 us | ~1.7x |
+
+The container overhead comes from two layers: the WSL2 virtual network adapter and the container network namespace. On bare-metal Linux with Docker, expect significantly less overhead.
 
 ---
 
 ## Memory cap enforcement
 
-Proves that `--memory-limit` is respected and LRU eviction works correctly.
+Proves that `--memory-limit` is respected and LRU eviction works correctly. Results are identical in both native and container runs.
 
 **Setup:** 2 MiB memory limit, inserting 4,000 keys with 1 KiB values each (~4 MiB of data into a 2 MiB store).
 
@@ -59,7 +101,7 @@ Proves that `--memory-limit` is respected and LRU eviction works correctly.
 | Keys inserted | 4,000 |
 | Data attempted | ~4 MiB |
 | Memory limit | 2,097,152 bytes (2 MiB) |
-| Final usage | 2,096,715 bytes (2,048 KiB) |
+| Final usage | 2,096,790 bytes (2,048 KiB) |
 | Usage vs. limit | **99.98%** — right at the boundary, never exceeded |
 
 ### LRU eviction verification
@@ -84,14 +126,25 @@ Early keys are evicted first. Recent keys are always retained. The eviction orde
 
 ## Reproduce locally
 
-Run the benchmark yourself:
+### Native
 
 ```bash
-# Start the server with a 2 MiB limit
 ./blink-store serve --tcp 127.0.0.1:8765 --memory-limit 2097152
 
 # In another terminal
 python3 scripts/benchmark.py
 ```
 
-The benchmark script lives at [`scripts/benchmark.py`](https://github.com/ashokdudhade/blink-store/blob/main/scripts/benchmark.py) in the repository.
+### Container
+
+```bash
+podman run -d --name blink-bench \
+  --cpus 1 --memory 2g \
+  -p 8765:8765 \
+  -e BLINK_MEMORY_LIMIT=2097152 \
+  ghcr.io/ashokdudhade/blink-store:latest
+
+python3 scripts/benchmark.py
+```
+
+Replace `podman` with `docker` if using Docker. The benchmark script lives at [`scripts/benchmark.py`](https://github.com/ashokdudhade/blink-store/blob/main/scripts/benchmark.py).

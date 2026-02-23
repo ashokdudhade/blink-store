@@ -1,20 +1,29 @@
-//! Simple text protocol for Blink-Store network interface.
+//! Zero-copy text protocol for Blink-Store.
 //!
 //! Line-based protocol (UTF-8, LF line endings):
 //! - `GET <key>`         → `VALUE <base64>` or `NOT_FOUND`
-//! - `SET <key> <value>` → `OK` or `ERROR <msg>` (value is rest of line)
+//! - `SET <key> <value>` → `OK` or `ERROR <msg>`
 //! - `DELETE <key>`      → `OK` or `NOT_FOUND`
 //! - `USAGE`             → `USAGE <bytes>`
 //! - `QUIT`              → connection close
 
 use base64::{engine::general_purpose::STANDARD as BASE64, Engine};
+use bytes::Bytes;
 use std::io::Write;
 
-/// Response lines sent to the client.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Command {
+    Get,
+    Set,
+    Delete,
+    Usage,
+    Quit,
+}
+
 #[derive(Debug)]
 pub enum Response {
     Ok,
-    Value(Vec<u8>),
+    Value(Bytes),
     NotFound,
     Usage(u64),
     Error(String),
@@ -32,27 +41,31 @@ impl Response {
     }
 }
 
-/// Parses one request line; returns (command, key, value).
-/// Key and value are empty when not applicable.
-pub fn parse_request(line: &str) -> Option<(String, String, String)> {
+/// Parses one request line into (Command, key, value) with zero heap allocations.
+/// Key and value borrow from the input line.
+pub fn parse_request(line: &str) -> Option<(Command, &str, &str)> {
     let line = line.trim();
     if line.is_empty() {
         return None;
     }
     let (cmd, rest) = line.split_once(char::is_whitespace).unwrap_or((line, ""));
-    let cmd = cmd.to_uppercase();
-    match cmd.as_str() {
-        "GET" | "DELETE" => Some((cmd, rest.trim().to_string(), String::new())),
-        "SET" => {
-            let key = rest.split_whitespace().next().unwrap_or("").to_string();
-            let value = rest
-                .strip_prefix(key.as_str())
-                .map(|s| s.trim_start().to_string())
-                .unwrap_or_else(|| rest.to_string());
-            Some((cmd, key, value))
-        }
-        "USAGE" | "QUIT" => Some((cmd, String::new(), String::new())),
-        _ => None,
+    let rest = rest.trim_start();
+
+    if cmd.eq_ignore_ascii_case("GET") {
+        Some((Command::Get, rest.trim(), ""))
+    } else if cmd.eq_ignore_ascii_case("DELETE") {
+        Some((Command::Delete, rest.trim(), ""))
+    } else if cmd.eq_ignore_ascii_case("SET") {
+        let (key, value) = rest
+            .split_once(char::is_whitespace)
+            .unwrap_or((rest, ""));
+        Some((Command::Set, key, value.trim_start()))
+    } else if cmd.eq_ignore_ascii_case("USAGE") {
+        Some((Command::Usage, "", ""))
+    } else if cmd.eq_ignore_ascii_case("QUIT") {
+        Some((Command::Quit, "", ""))
+    } else {
+        None
     }
 }
 
@@ -63,14 +76,14 @@ mod tests {
     #[test]
     fn parse_get() {
         let (cmd, key, _) = parse_request("GET foo").unwrap();
-        assert_eq!(cmd, "GET");
+        assert_eq!(cmd, Command::Get);
         assert_eq!(key, "foo");
     }
 
     #[test]
     fn parse_set() {
         let (cmd, key, value) = parse_request("SET k v with spaces").unwrap();
-        assert_eq!(cmd, "SET");
+        assert_eq!(cmd, Command::Set);
         assert_eq!(key, "k");
         assert_eq!(value, "v with spaces");
     }
@@ -78,14 +91,23 @@ mod tests {
     #[test]
     fn parse_set_key_only() {
         let (cmd, key, value) = parse_request("SET k").unwrap();
-        assert_eq!(cmd, "SET");
+        assert_eq!(cmd, Command::Set);
         assert_eq!(key, "k");
         assert!(value.is_empty());
     }
 
     #[test]
     fn parse_usage_quit() {
-        assert!(parse_request("USAGE").is_some());
-        assert!(parse_request("QUIT").is_some());
+        let (cmd, _, _) = parse_request("USAGE").unwrap();
+        assert_eq!(cmd, Command::Usage);
+        let (cmd, _, _) = parse_request("QUIT").unwrap();
+        assert_eq!(cmd, Command::Quit);
+    }
+
+    #[test]
+    fn parse_case_insensitive() {
+        let (cmd, key, _) = parse_request("get FOO").unwrap();
+        assert_eq!(cmd, Command::Get);
+        assert_eq!(key, "FOO");
     }
 }

@@ -1,7 +1,8 @@
 //! CLI for Blink-Store.
 
 use anyhow::{Context, Result};
-use blink_store::{BlinkStorage, MemoryEngine};
+use blink_store::MemoryEngine;
+use bytes::Bytes;
 use clap::Parser;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -33,7 +34,7 @@ enum Command {
         log_dir: Option<PathBuf>,
     },
 
-    /// Serve storage over TCP and/or Unix socket (see docs/protocol.md)
+    /// Serve storage over TCP and/or Unix socket
     Serve {
         /// Memory limit in bytes.
         #[arg(long, default_value = "10485760")]
@@ -80,11 +81,8 @@ async fn main() -> Result<()> {
                 }
             }
 
-            let store: Arc<dyn BlinkStorage> =
-                Arc::new(MemoryEngine::new(memory_limit)?);
-
+            let store = Arc::new(MemoryEngine::new(memory_limit)?);
             info!(action = "start", memory_limit, "Store ready");
-
             run_repl(store).await?;
         }
 
@@ -111,8 +109,7 @@ async fn main() -> Result<()> {
                 }
             }
 
-            let store: Arc<dyn BlinkStorage> =
-                Arc::new(MemoryEngine::new(memory_limit)?);
+            let store = Arc::new(MemoryEngine::new(memory_limit)?);
 
             if let Some(ref addr) = tcp {
                 let store_tcp = store.clone();
@@ -143,7 +140,8 @@ async fn main() -> Result<()> {
 }
 
 /// Simple REPL: get <k>, set <k> <v>, delete <k>, usage, quit.
-async fn run_repl(store: std::sync::Arc<dyn BlinkStorage>) -> Result<()> {
+async fn run_repl(store: std::sync::Arc<MemoryEngine>) -> Result<()> {
+    use blink_store::BlinkStorage;
     use std::io::{self, BufRead, Write};
 
     let stdin = io::stdin();
@@ -166,7 +164,7 @@ async fn run_repl(store: std::sync::Arc<dyn BlinkStorage>) -> Result<()> {
         match cmd {
             "quit" | "exit" => break,
             "usage" => {
-                let n = store.current_usage_bytes().await?;
+                let n = store.current_usage_bytes()?;
                 writeln!(stdout, "usage: {} bytes", n)?;
             }
             "get" => {
@@ -174,7 +172,7 @@ async fn run_repl(store: std::sync::Arc<dyn BlinkStorage>) -> Result<()> {
                 if key.is_empty() {
                     writeln!(stdout, "get <key>")?;
                 } else {
-                    match store.get(key).await {
+                    match store.get(key) {
                         Ok(Some(v)) => writeln!(stdout, "{}", String::from_utf8_lossy(&v))?,
                         Ok(None) => writeln!(stdout, "(not found)")?,
                         Err(e) => writeln!(stdout, "error: {}", e)?,
@@ -190,7 +188,7 @@ async fn run_repl(store: std::sync::Arc<dyn BlinkStorage>) -> Result<()> {
                 if key.is_empty() {
                     writeln!(stdout, "set <key> <value>")?;
                 } else {
-                    match store.set(key, value.as_bytes().to_vec()).await {
+                    match store.set(key, Bytes::copy_from_slice(value.as_bytes())) {
                         Ok(()) => writeln!(stdout, "ok")?,
                         Err(e) => writeln!(stdout, "error: {}", e)?,
                     }
@@ -201,7 +199,7 @@ async fn run_repl(store: std::sync::Arc<dyn BlinkStorage>) -> Result<()> {
                 if key.is_empty() {
                     writeln!(stdout, "delete <key>")?;
                 } else {
-                    match store.delete(key).await {
+                    match store.delete(key) {
                         Ok(true) => writeln!(stdout, "deleted")?,
                         Ok(false) => writeln!(stdout, "(not found)")?,
                         Err(e) => writeln!(stdout, "error: {}", e)?,
