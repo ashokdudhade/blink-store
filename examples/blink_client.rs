@@ -1,4 +1,4 @@
-//! Example client for Blink-Store TCP/Unix protocol.
+//! Example client for Blink Store TCP/Unix protocol.
 //!
 //! Usage:
 //!   cargo run --example blink_client -- --tcp 127.0.0.1:8765

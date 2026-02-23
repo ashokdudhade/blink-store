@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Benchmark Blink-Store: throughput, latency, memory cap enforcement, and LRU eviction."""
+"""Benchmark Blink Store: throughput, latency, memory cap enforcement, and sampled eviction."""
 
 import socket
 import statistics
@@ -64,7 +64,7 @@ def main():
     VALUE_1K = "x" * 1024
 
     print("=" * 62)
-    print("  Blink-Store Benchmark")
+    print("  Blink Store Benchmark")
     print("=" * 62)
     print(f"  Server       : {HOST}:{PORT}")
     print(f"  Operations   : {N:,} per test")

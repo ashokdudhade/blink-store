@@ -4,7 +4,7 @@ title: Shell (Bash)
 
 # Shell (Bash)
 
-Connect to Blink-Store from bash using built-in `/dev/tcp` — no external tools needed beyond `base64`.
+Connect to Blink Store from bash using built-in `/dev/tcp` — no external tools needed beyond `base64`.
 
 ---
 
@@ -12,7 +12,7 @@ Connect to Blink-Store from bash using built-in `/dev/tcp` — no external tools
 
 - Bash 4+
 - `base64` command (pre-installed on most systems)
-- Blink-Store server running ([Installation](../installation))
+- Blink Store server running ([Installation](../installation))
 
 ---
 
@@ -80,7 +80,7 @@ Send a single command from a script:
 
 ```bash
 #!/usr/bin/env bash
-# blink.sh -- send one command to Blink-Store
+# blink.sh -- send one command to Blink Store
 HOST="${2:-127.0.0.1}"
 PORT="${3:-8765}"
 

@@ -4,14 +4,14 @@ title: Go
 
 # Go
 
-Connect to Blink-Store from Go using the standard library — no external modules needed.
+Connect to Blink Store from Go using the standard library — no external modules needed.
 
 ---
 
 ## Prerequisites
 
 - Go 1.18+
-- Blink-Store server running ([Installation](../installation))
+- Blink Store server running ([Installation](../installation))
 
 ---
 

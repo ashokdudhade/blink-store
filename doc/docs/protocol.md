@@ -5,7 +5,7 @@ title: Protocol Reference
 
 # Protocol Reference
 
-Blink-Store uses a **line-based text protocol** over TCP or Unix sockets.
+Blink Store uses a **line-based text protocol** over TCP or Unix sockets.
 
 - One command per line, one response per line.
 - Encoding: UTF-8 with `\n` (LF) line endings.
@@ -27,13 +27,13 @@ Blink-Store uses a **line-based text protocol** over TCP or Unix sockets.
 
 ## Responses
 
-| Response | Meaning |
-|----------|---------|
-| `OK`          | Command succeeded (`SET`, `DELETE`). |
-| `VALUE <b64>` | Key found. `<b64>` is the base64-encoded value. |
-| `NOT_FOUND`   | Key does not exist. |
+| Response | When |
+|----------|------|
+| `OK`          | `SET` succeeded, or `DELETE` found and removed the key. |
+| `VALUE <b64>` | `GET` found the key. `<b64>` is the base64-encoded value. |
+| `NOT_FOUND`   | `GET` or `DELETE` — key does not exist. |
 | `USAGE <n>`   | Current stored size in bytes (keys + values). |
-| `ERROR <msg>` | Something went wrong. `<msg>` describes the error. |
+| `ERROR <msg>` | Invalid command or internal error. `<msg>` describes the issue. |
 
 ---
 

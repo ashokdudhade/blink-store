@@ -4,14 +4,14 @@ title: Python
 
 # Python
 
-Connect to Blink-Store from Python using the standard library — no third-party packages needed.
+Connect to Blink Store from Python using the standard library — no third-party packages needed.
 
 ---
 
 ## Prerequisites
 
 - Python 3.6+
-- Blink-Store server running ([Installation](../installation))
+- Blink Store server running ([Installation](../installation))
 
 ---
 
@@ -21,7 +21,7 @@ A complete REPL client. Save as `client.py` and run it.
 
 ```python
 #!/usr/bin/env python3
-"""Blink-Store interactive client."""
+"""Blink Store interactive client."""
 
 import base64
 import socket
@@ -112,7 +112,7 @@ blink("USAGE")                     # -> "USAGE 18"
 
 ## HTTP backend example
 
-Use Blink-Store as a cache behind a Python HTTP API. No dependencies beyond the standard library.
+Use Blink Store as a cache behind a Python HTTP API. No dependencies beyond the standard library.
 
 ```python
 import base64, os, socket

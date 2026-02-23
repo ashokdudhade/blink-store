@@ -1,4 +1,4 @@
-# Blink-Store example clients
+# Blink Store example clients
 
 Same line-based protocol: `GET <key>`, `SET <key> <value>`, `DELETE <key>`, `USAGE`, `QUIT`.  
 Responses: `OK`, `VALUE <base64>`, `NOT_FOUND`, `USAGE <n>`, `ERROR <msg>`.
@@ -25,7 +25,7 @@ Run **without cloning** by downloading the script:
 
 With the repo: `python examples/clients/python/blink_client.py`, etc. Rust: `cargo run --example blink_client -- --tcp 127.0.0.1:8765`.
 
-## Backend usage (HTTP API using Blink-Store as cache)
+## Backend usage (HTTP API using Blink Store as cache)
 
 Each runs an HTTP server: `GET /<key>` returns value, `POST /<key>` with body sets value.  
 Set `BLINK_STORE=host:port` (default 127.0.0.1:8765) and optionally `PORT` (default 8080).

@@ -3,8 +3,8 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'Blink-Store',
-  tagline: 'In-memory key-value store. Single binary. Any language.',
+  title: 'Blink Store',
+  tagline: 'Blazing-fast in-memory key-value store. Single binary. Any language.',
   favicon: 'img/favicon.ico',
 
   future: {
@@ -23,6 +23,16 @@ const config: Config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
+
+  headTags: [
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:image',
+        content: 'https://ashokdudhade.github.io/blink-store/img/logo.png',
+      },
+    },
+  ],
 
   presets: [
     [
@@ -47,9 +57,9 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'Blink-Store',
+      title: 'Blink Store',
       logo: {
-        alt: 'Blink-Store Logo',
+        alt: 'Blink Store Logo',
         src: 'img/logo.png',
       },
       items: [
@@ -58,6 +68,11 @@ const config: Config = {
           sidebarId: 'docsSidebar',
           position: 'left',
           label: 'Docs',
+        },
+        {
+          to: '/docs/benchmarks',
+          position: 'left',
+          label: 'Benchmarks',
         },
         {
           href: 'https://github.com/ashokdudhade/blink-store',
@@ -70,17 +85,27 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Documentation',
+          title: 'Getting Started',
           items: [
-            {label: 'Getting Started', to: '/docs/installation'},
+            {label: 'Introduction', to: '/docs/introduction'},
+            {label: 'Installation', to: '/docs/installation'},
             {label: 'Protocol Reference', to: '/docs/protocol'},
-            {label: 'Language Guides', to: '/docs/guides/'},
-            {label: 'Deployment', to: '/docs/deployment'},
           ],
         },
         {
-          title: 'More',
+          title: 'Guides',
           items: [
+            {label: 'Python', to: '/docs/guides/python'},
+            {label: 'Node.js', to: '/docs/guides/nodejs'},
+            {label: 'Go', to: '/docs/guides/go'},
+            {label: 'Rust', to: '/docs/guides/rust'},
+          ],
+        },
+        {
+          title: 'Resources',
+          items: [
+            {label: 'Deployment', to: '/docs/deployment'},
+            {label: 'Benchmarks', to: '/docs/benchmarks'},
             {
               label: 'GitHub',
               href: 'https://github.com/ashokdudhade/blink-store',
@@ -92,7 +117,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Blink-Store contributors.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Blink Store contributors.`,
     },
     prism: {
       theme: prismThemes.github,

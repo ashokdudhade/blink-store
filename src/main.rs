@@ -1,4 +1,4 @@
-//! CLI for Blink-Store.
+//! CLI for Blink Store.
 
 use anyhow::{Context, Result};
 use blink_store::MemoryEngine;

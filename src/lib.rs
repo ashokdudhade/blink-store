@@ -1,4 +1,4 @@
-//! Blink-Store: in-memory key-value store with sampled eviction and memory-cap enforcement.
+//! Blink Store: in-memory key-value store with sampled eviction and memory-cap enforcement.
 
 pub mod engine;
 pub mod error;

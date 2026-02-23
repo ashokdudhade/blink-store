@@ -1,4 +1,4 @@
-# Blink-Store TCP server with resource limits.
+# Blink Store TCP server with resource limits.
 # Usage: docker compose up -d   then connect to host:8765
 
 services:

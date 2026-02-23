@@ -4,7 +4,7 @@ title: HTTP Backend Pattern
 
 # HTTP Backend Pattern
 
-Use Blink-Store as a cache behind your HTTP API. This pattern works in any language: your HTTP handler opens a TCP connection to Blink-Store, sends a command, reads the response, and returns it to the HTTP client.
+Use Blink Store as a cache behind your HTTP API. This pattern works in any language: your HTTP handler opens a TCP connection to Blink Store, sends a command, reads the response, and returns it to the HTTP client.
 
 ---
 
@@ -12,15 +12,15 @@ Use Blink-Store as a cache behind your HTTP API. This pattern works in any langu
 
 ```text
 ┌──────────┐       HTTP        ┌───────────────┐       TCP        ┌─────────────┐
-│  Client   │ ───────────────→ │  Your HTTP    │ ──────────────→ │ Blink-Store │
+│  Client   │ ───────────────→ │  Your HTTP    │ ──────────────→ │ Blink Store │
 │ (browser, │ ←─────────────── │  Backend      │ ←────────────── │   Server    │
 │  curl)    │                  └───────────────┘                  └─────────────┘
 └──────────┘
 ```
 
-Your backend translates HTTP methods to Blink-Store commands:
+Your backend translates HTTP methods to Blink Store commands:
 
-| HTTP | Blink-Store | Behavior |
+| HTTP | Blink Store | Behavior |
 |------|------------|----------|
 | `POST /<key>` (with body) | `SET key body` | Store a value |
 | `GET /<key>` | `GET key` | Retrieve a value |
@@ -158,7 +158,7 @@ curl -X DELETE http://localhost:8080/greeting
 
 ## Production tips
 
-- **Connection pooling** — Open a persistent TCP connection to Blink-Store instead of connecting per request. This reduces latency significantly under load.
+- **Connection pooling** — Open a persistent TCP connection to Blink Store instead of connecting per request. This reduces latency significantly under load.
 - **Timeouts** — Set socket read/write timeouts to avoid hanging if the store is unresponsive.
 - **Error handling** — Always handle `NOT_FOUND`, `ERROR`, and connection failures gracefully.
 - **Health checks** — Use the `USAGE` command as a liveness probe.

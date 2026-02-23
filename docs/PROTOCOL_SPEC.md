@@ -1,4 +1,4 @@
-# Blink-Store Protocol Specification
+# Blink Store Protocol Specification
 
 Transport: TCP or Unix domain socket. Encoding: UTF-8, LF line endings.
 

@@ -4,11 +4,11 @@ title: Introduction
 slug: /introduction
 ---
 
-# Blink-Store
+# Blink Store
 
-> In-memory key-value store. Single binary. Any language.
+> Blazing-fast in-memory key-value store. Single binary. Any language.
 
-Blink-Store is an in-memory key-value store built in Rust. It ships as a single binary with no runtime dependencies — download it, run it, and connect from any language over TCP.
+Blink Store is a blazing-fast in-memory key-value store built in Rust. It ships as a single binary with no runtime dependencies — download it, run it, and connect from any language over TCP. Sub-50 µs median latency. 16K+ ops/sec on a single connection.
 
 It is designed for teams that need a **simple, fast local cache** without the overhead of Redis, Memcached, or an external service. Install in seconds, configure with flags, integrate with a few lines of socket code.
 
@@ -19,11 +19,11 @@ It is designed for teams that need a **simple, fast local cache** without the ov
 | | |
 |:---|:---|
 | **Single binary, zero config** | One `curl` command to install. One flag to start. No config files, no daemon setup, no package manager. |
-| **Works with every language** | Plain-text TCP protocol. If your language can open a socket and send a line of text, it can use Blink-Store. Clients shown for Python, Node.js, Go, Bash, and Rust. |
-| **Built-in memory management** | Set a byte limit with `--memory-limit`. Blink-Store tracks the size of every key and value and automatically evicts least-recently-used entries when the limit is reached. |
+| **Works with every language** | Plain-text TCP protocol. If your language can open a socket and send a line of text, it can use Blink Store. Clients shown for Python, Node.js, Go, Bash, and Rust. |
+| **Smart memory management** | Set a byte limit with `--memory-limit`. Blink Store tracks the size of every key and value and uses sampled eviction (similar to Redis) to reclaim space when the limit is reached. |
 | **Written in Rust** | No `unsafe` code in the library. Error handling with `Result` throughout — no panics in production paths. Structured logging via `tracing`. |
-| **Concurrent by design** | Storage backed by `DashMap` (lock-free concurrent hash map). Async I/O with Tokio. Each client connection is served on its own task. |
-| **Cross-platform** | Pre-built release binaries for Linux (x86_64, aarch64), macOS (x86_64, arm64), and Windows (x86_64). Also runs in Docker. |
+| **Concurrent by design** | Storage backed by `DashMap` (lock-free concurrent hash map). Async I/O with Tokio. Each client connection is served on its own lightweight task. |
+| **Cross-platform** | Pre-built release binaries for Linux (x86_64, aarch64), macOS (x86_64, arm64), and Windows (x86_64). Docker images for `linux/amd64` and `linux/arm64`. |
 | **TCP and Unix sockets** | Listen on `--tcp`, `--unix`, or both at the same time. |
 
 ---
@@ -62,7 +62,7 @@ Five commands. That's the entire API.
 |---------|---------|----------|
 | `SET key value` | `SET user alice` | `OK` |
 | `GET key` | `GET user` | `VALUE YWxpY2U=` |
-| `DELETE key` | `DELETE user` | `OK` |
+| `DELETE key` | `DELETE user` | `OK` or `NOT_FOUND` |
 | `USAGE` | `USAGE` | `USAGE 9` |
 | `QUIT` | `QUIT` | *(connection closed)* |
 
@@ -70,25 +70,25 @@ Full specification: [Protocol Reference](protocol).
 
 ---
 
-## How it works
+## Architecture
 
 ```text
-                      ┌─────────────────────────────┐
-  TCP / Unix socket   │         Blink-Store          │
-  ─────────────────→  │                               │
-                      │  ┌─────────┐   ┌───────────┐ │
-   SET / GET / DELETE  │  │ DashMap │ ← │ LRU Cache │ │
-  ←─────────────────  │  │ (store) │   │ (eviction)│ │
-                      │  └─────────┘   └───────────┘ │
-                      │       ↑                       │
-                      │  AtomicU64 (size tracking)    │
-                      └─────────────────────────────┘
+                   ┌──────────────────────────────────┐
+ TCP / Unix socket │          Blink Store              │
+ ────────────────→ │                                    │
+                   │  ┌──────────┐  ┌────────────────┐ │
+  SET / GET / DEL  │  │ DashMap  │ ←│    Sampled     │ │
+ ←──────────────── │  │ (store)  │  │   Eviction     │ │
+                   │  └──────────┘  └────────────────┘ │
+                   │       ↑                            │
+                   │  AtomicU64 (size tracking)         │
+                   └──────────────────────────────────┘
 ```
 
-- **DashMap** — concurrent hash map for key-value storage. Lock-free reads.
-- **LRU cache** — tracks access order. When `--memory-limit` is exceeded, the least-recently-used key is evicted.
-- **AtomicU64** — tracks total stored bytes (key length + value length) with atomic operations.
-- **Tokio** — async runtime. Each connection is a lightweight task.
+- **DashMap** — lock-free concurrent hash map. Multiple connections read and write without blocking each other.
+- **Sampled eviction** — each entry stores a monotonic access counter. When the memory limit is exceeded, a sample of entries is inspected and the least-recently-accessed one is evicted. This is the same strategy Redis uses — probabilistic, low-overhead, and effective.
+- **AtomicU64** — tracks total stored bytes (key length + value length) with atomic operations. No locks.
+- **Tokio** — async runtime. Each connection is a lightweight task, not a thread.
 
 ---
 
@@ -98,3 +98,15 @@ Full specification: [Protocol Reference](protocol).
 - **Sidecar cache** — Run alongside your application for low-latency caching without network hops to an external service.
 - **CI/CD ephemeral store** — Spin up a cache in your test pipeline with a single command. Tear it down when done.
 - **Prototyping** — Add caching to any project in minutes. The protocol is simple enough to implement inline.
+- **Multi-language environments** — Share cached data between services written in different languages over TCP.
+
+---
+
+## When to use something else
+
+Blink Store is deliberately simple. Reach for Redis, Valkey, or Memcached when you need:
+
+- **Persistence** — Blink Store is ephemeral. Data is lost when the process stops.
+- **Clustering / replication** — Blink Store is single-node.
+- **Rich data structures** — Lists, sets, sorted sets, streams, pub/sub.
+- **Access control** — Blink Store has no authentication or authorization.

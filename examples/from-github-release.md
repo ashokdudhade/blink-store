@@ -1,6 +1,6 @@
 # Example: Using a release from GitHub (no clone)
 
-Run **Blink-Store** from [GitHub Releases](https://github.com/ashokdudhade/blink-store/releases). No Git clone, no Rust.
+Run **Blink Store** from [GitHub Releases](https://github.com/ashokdudhade/blink-store/releases). No Git clone, no Rust.
 
 - Use **latest** for the newest release.
 - Use a version tag (e.g. `v0.1.0`) to pin.

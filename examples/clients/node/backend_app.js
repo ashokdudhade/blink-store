@@ -1,4 +1,4 @@
-// HTTP backend using Blink-Store. GET /:key, POST /:key body. No deps.
+// HTTP backend using Blink Store. GET /:key, POST /:key body. No deps.
 // Start store: cargo run -- serve --tcp 127.0.0.1:8765
 // Run: BLINK_STORE=127.0.0.1:8765 node backend_app.js
 

@@ -6,7 +6,7 @@ slug: /guides/
 
 # Language Guides
 
-Blink-Store speaks a plain-text [protocol](../protocol) over TCP. Any language with socket support can connect — no SDK, no driver, no library to install.
+Blink Store speaks a plain-text [protocol](../protocol) over TCP. Any language with socket support can connect — no SDK, no driver, no library to install.
 
 Each guide below includes a complete, copy-paste interactive client, a one-off command helper, and language-specific tips.
 
@@ -26,13 +26,13 @@ Each guide below includes a complete, copy-paste interactive client, a one-off c
 
 ## HTTP backends
 
-Want to use Blink-Store as a cache behind your HTTP API? See the [HTTP Backend Pattern](http-backend) for complete server examples in Python and Node.js.
+Want to use Blink Store as a cache behind your HTTP API? See the [HTTP Backend Pattern](http-backend) for complete server examples in Python, Node.js, Go, and Rust.
 
 ---
 
 ## Any other language?
 
-Blink-Store works with any language that can:
+Blink Store works with any language that can:
 
 1. Open a TCP socket
 2. Send a line of text (UTF-8, `\n` terminated)

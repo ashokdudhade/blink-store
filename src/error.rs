@@ -1,4 +1,4 @@
-//! Library-level errors for Blink-Store.
+//! Library-level errors for Blink Store.
 
 use thiserror::Error;
 

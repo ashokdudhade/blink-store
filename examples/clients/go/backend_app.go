@@ -1,4 +1,4 @@
-// Minimal HTTP backend using Blink-Store as cache. GET /key, POST /key with body.
+// Minimal HTTP backend using Blink Store as cache. GET /key, POST /key with body.
 // Start store: cargo run -- serve --tcp 127.0.0.1:8765
 // Run: BLINK_STORE=127.0.0.1:8765 go run backend_app.go
 

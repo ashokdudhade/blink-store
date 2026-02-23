@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Example Blink-Store client (TCP). GET/SET/DELETE/USAGE/QUIT, VALUE is base64.
+"""Example Blink Store client (TCP). GET/SET/DELETE/USAGE/QUIT, VALUE is base64.
 Usage: python blink_client.py [host [port]]"""
 
 import base64

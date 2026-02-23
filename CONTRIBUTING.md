@@ -1,4 +1,4 @@
-# Contributing to Blink-Store
+# Contributing to Blink Store
 
 ## Adding a new language client
 

@@ -1,11 +1,11 @@
 <p align="center">
-  <img src="assets/logo.png" alt="Blink-Store" width="140">
+  <img src="assets/logo.png" alt="Blink Store" width="180">
 </p>
 
-<h1 align="center">Blink-Store</h1>
+<h1 align="center">Blink Store</h1>
 
 <p align="center">
-  <strong>In-memory key-value store. Single binary. Any language.</strong>
+  <strong>Blazing-fast in-memory key-value store. Single binary. Any language.</strong>
 </p>
 
 <p align="center">
@@ -17,7 +17,7 @@
 
 ---
 
-Blink-Store is an in-memory key-value store built in Rust. It ships as a **single binary** with no runtime dependencies — download it, run it, and connect from any language over TCP.
+Blink Store is a blazing-fast in-memory key-value store built in Rust. It ships as a **single binary** with no runtime dependencies — download it, run it, and connect from any language over TCP. Sub-50 µs median latency. 16K+ ops/sec on a single connection.
 
 Designed for teams that need a **simple, fast local cache** without the overhead of Redis, Memcached, or an external service. Install in seconds, configure with flags, integrate with a few lines of socket code.
 
@@ -27,7 +27,7 @@ Designed for teams that need a **simple, fast local cache** without the overhead
 |:---|:---|
 | **Single binary, zero config** | One `curl` command to install. One flag to start. No config files, no daemon setup. |
 | **Works with every language** | Plain-text TCP protocol. If your language can open a socket and send a line of text, it works. |
-| **Built-in memory management** | Set a byte limit with `--memory-limit`. Automatic LRU eviction when the limit is reached. |
+| **Smart memory management** | Set a byte limit with `--memory-limit`. Sampled eviction (like Redis) automatically reclaims space. |
 | **Written in Rust** | No `unsafe` code. `Result`-based error handling throughout. Structured logging via `tracing`. |
 | **Concurrent by design** | `DashMap` for lock-free reads. Tokio async runtime. Each connection is a lightweight task. |
 | **Cross-platform** | Pre-built binaries for Linux, macOS, and Windows (x86_64 and ARM64). Also runs in Docker. |
@@ -71,7 +71,7 @@ Five commands. That's the entire API.
 |---------|---------|----------|
 | `SET key value` | `SET user alice` | `OK` |
 | `GET key` | `GET user` | `VALUE YWxpY2U=` |
-| `DELETE key` | `DELETE user` | `OK` |
+| `DELETE key` | `DELETE user` | `OK` or `NOT_FOUND` |
 | `USAGE` | `USAGE` | `USAGE 9` |
 | `QUIT` | `QUIT` | *(connection closed)* |
 

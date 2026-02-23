@@ -5,7 +5,7 @@ title: Deployment
 
 # Deployment
 
-This page covers running Blink-Store in production: standalone, Docker, resource limits, and logging.
+This page covers running Blink Store in production: standalone, Docker, resource limits, and logging.
 
 ---
 
@@ -19,7 +19,7 @@ Install the latest binary (see [Installation](installation)) and run:
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `--tcp <addr>:<port>` | *required* | TCP listen address. Use `0.0.0.0` to accept external connections. |
+| `--tcp <addr>:<port>` | *(none)* | TCP listen address. Use `0.0.0.0` to accept external connections. At least one of `--tcp` or `--unix` is required. |
 | `--unix <path>` | *(none)* | Unix domain socket path (Linux/macOS only). |
 | `--memory-limit <bytes>` | `10485760` (10 MiB) | Maximum total size of stored keys + values. LRU eviction kicks in when exceeded. |
 | `--log-dir <path>` | *(none)* | Directory for rolling log files. |
@@ -128,7 +128,7 @@ Logs use structured `tracing` format and include timestamps, log levels, key nam
 
 ## Health check
 
-Blink-Store responds to `USAGE` with the current memory usage:
+Blink Store responds to `USAGE` with the current memory usage:
 
 ```bash
 echo "USAGE" | nc 127.0.0.1 8765

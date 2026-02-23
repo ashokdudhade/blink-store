@@ -1,4 +1,4 @@
-# Minimal HTTP backend using Blink-Store. GET /<key>, POST /<key> with body.
+# Minimal HTTP backend using Blink Store. GET /<key>, POST /<key> with body.
 # Start store: cargo run -- serve --tcp 127.0.0.1:8765
 # Run: BLINK_STORE=127.0.0.1:8765 python backend_app.py
 

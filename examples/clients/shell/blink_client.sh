@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Example Blink-Store client (TCP). Requires: bash, base64.
+# Example Blink Store client (TCP). Requires: bash, base64.
 # Usage: ./blink_client.sh [host [port]]
 #        ./blink_client.sh 127.0.0.1 8765
 

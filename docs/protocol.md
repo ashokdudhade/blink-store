@@ -1,4 +1,4 @@
-# Blink-Store network protocol
+# Blink Store network protocol
 
 Line-based text protocol over TCP or Unix socket. UTF-8, LF (`\n`) line endings.
 

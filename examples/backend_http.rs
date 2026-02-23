@@ -1,4 +1,4 @@
-//! Minimal HTTP backend that uses Blink-Store (TCP) as cache.
+//! Minimal HTTP backend that uses Blink Store (TCP) as cache.
 //! GET /<key> returns cached value; POST /<key> with body sets value.
 //!
 //! Start blink-store: cargo run -- serve --tcp 127.0.0.1:8765
@@ -8,7 +8,7 @@ use base64::{engine::general_purpose::STANDARD as BASE64, Engine};
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, TcpStream};
 
-/// One TCP connection per request to Blink-Store.
+/// One TCP connection per request to Blink Store.
 async fn store_request(addr: &str, cmd: &str, key: &str, value: &[u8]) -> std::io::Result<String> {
     let mut stream = TcpStream::connect(addr).await?;
     let (reader, mut writer) = stream.split();

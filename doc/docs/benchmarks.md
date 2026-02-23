@@ -107,7 +107,7 @@ Proves that `--memory-limit` is respected and sampled eviction works correctly. 
 
 ### Sampled eviction verification
 
-Blink-Store uses sampled eviction (similar to Redis). Rather than maintaining a strict LRU list, it samples a fixed number of entries and evicts the least-recently-accessed one. This is probabilistic — older keys are statistically more likely to be evicted, but not guaranteed in exact LRU order.
+Blink Store uses sampled eviction (similar to Redis). Rather than maintaining a strict LRU list, it samples a fixed number of entries and evicts the least-recently-accessed one. This is probabilistic — older keys are statistically more likely to be evicted, but not guaranteed in exact LRU order.
 
 | Key | Status | Notes |
 |-----|--------|-------|

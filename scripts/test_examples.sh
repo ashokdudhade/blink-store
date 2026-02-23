@@ -75,7 +75,7 @@ cleanup() {
 trap cleanup EXIT
 cleanup
 
-echo "Starting Blink-Store on $BLINK_PORT (using $BLINK_BIN)..."
+echo "Starting Blink Store on $BLINK_PORT (using $BLINK_BIN)..."
 "$BLINK_BIN" serve --tcp 127.0.0.1:$BLINK_PORT 2>/dev/null &
 sleep 1
 

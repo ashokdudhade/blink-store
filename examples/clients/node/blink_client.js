@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Example Blink-Store client (TCP). Protocol: GET/SET/DELETE/USAGE/QUIT, VALUE is base64.
+/** Example Blink Store client (TCP). Protocol: GET/SET/DELETE/USAGE/QUIT, VALUE is base64.
  *
  * Usage:
  *   node blink_client.js [host [port]]

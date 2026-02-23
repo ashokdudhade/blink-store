@@ -1,6 +1,6 @@
 # Language-Specific Integration Guides
 
-Connect to Blink-Store over TCP (or Unix socket on Unix) using the line-based text protocol. See [Protocol Specification](PROTOCOL_SPEC.md).
+Connect to Blink Store over TCP (or Unix socket on Unix) using the line-based text protocol. See [Protocol Specification](PROTOCOL_SPEC.md).
 
 ## Node.js
 

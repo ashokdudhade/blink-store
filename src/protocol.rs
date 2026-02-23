@@ -1,4 +1,4 @@
-//! Zero-copy text protocol for Blink-Store.
+//! Zero-copy text protocol for Blink Store.
 //!
 //! Line-based protocol (UTF-8, LF line endings):
 //! - `GET <key>`         → `VALUE <base64>` or `NOT_FOUND`
