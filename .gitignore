@@ -1,6 +1,10 @@
 # Rust
 /target/
 **/*.rs.bk
+
+# Local distribution (build with scripts/build-dist.sh)
+/dist/
+
 # IDE / editor
 .idea/
 .vscode/
