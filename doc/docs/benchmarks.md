@@ -29,24 +29,24 @@ Server runs directly on the host. All cores and memory available.
 
 | Operation | Value size | ops/sec |
 |-----------|-----------|---------|
-| `SET` | 64 bytes | ~8,950 |
-| `SET` | 256 bytes | ~9,600 |
-| `SET` | 1 KiB | ~8,800 |
-| `GET` | — | ~11,100 |
-| `DELETE` | — | ~9,700 |
+| `SET` | 64 bytes | ~9,500 |
+| `SET` | 256 bytes | ~11,400 |
+| `SET` | 1 KiB | ~14,500 |
+| `GET` | — | ~16,500 |
+| `DELETE` | — | ~15,900 |
 
 ### Latency
 
 | Operation | avg | p50 | p95 | p99 | max |
 |-----------|-----|-----|-----|-----|-----|
-| `SET` | 106 us | 85 us | 207 us | 347 us | 5.97 ms |
-| `GET` | 91 us | 81 us | 151 us | 231 us | 906 us |
+| `SET` | 76 us | 47 us | 170 us | 432 us | 11.36 ms |
+| `GET` | 64 us | 50 us | 88 us | 171 us | 16.06 ms |
 
 ---
 
 ## Container (1 CPU, 2 GB memory)
 
-Server runs inside a container pulled from `ghcr.io/ashokdudhade/blink-store:latest`, restricted to 1 CPU and 2 GB memory via Podman/Docker resource limits.
+Server runs inside a container built from the project `Dockerfile`, restricted to 1 CPU and 2 GB memory via Podman/Docker resource limits.
 
 ```bash
 podman run -d --name blink-store \
@@ -60,31 +60,31 @@ podman run -d --name blink-store \
 
 | Operation | Value size | ops/sec |
 |-----------|-----------|---------|
-| `SET` | 64 bytes | ~4,430 |
-| `SET` | 256 bytes | ~4,930 |
-| `SET` | 1 KiB | ~4,100 |
-| `GET` | — | ~5,730 |
-| `DELETE` | — | ~5,900 |
+| `SET` | 64 bytes | ~5,200 |
+| `SET` | 256 bytes | ~6,500 |
+| `SET` | 1 KiB | ~6,100 |
+| `GET` | — | ~6,100 |
+| `DELETE` | — | ~6,300 |
 
 ### Latency
 
 | Operation | avg | p50 | p95 | p99 | max |
 |-----------|-----|-----|-----|-----|-----|
-| `SET` | 204 us | 180 us | 328 us | 455 us | 966 us |
-| `GET` | 185 us | 167 us | 294 us | 398 us | 959 us |
+| `SET` | 151 us | 136 us | 217 us | 357 us | 1.81 ms |
+| `GET` | 153 us | 136 us | 216 us | 387 us | 1.71 ms |
 
 ### Native vs. container comparison
 
 | Metric | Native | Container (1 CPU, 2 GB) | Overhead |
 |--------|--------|------------------------|----------|
-| SET 256B throughput | 9,600 ops/s | 4,930 ops/s | ~49% |
-| GET throughput | 11,100 ops/s | 5,730 ops/s | ~48% |
-| SET p50 latency | 85 us | 180 us | ~2.1x |
-| GET p50 latency | 81 us | 167 us | ~2.1x |
-| SET p95 latency | 207 us | 328 us | ~1.6x |
-| GET p95 latency | 151 us | 294 us | ~1.9x |
-| SET p99 latency | 347 us | 455 us | ~1.3x |
-| GET p99 latency | 231 us | 398 us | ~1.7x |
+| SET 256B throughput | 11,400 ops/s | 6,500 ops/s | ~43% slower |
+| GET throughput | 16,500 ops/s | 6,100 ops/s | ~63% slower |
+| SET p50 latency | 47 us | 136 us | ~2.9x |
+| GET p50 latency | 50 us | 136 us | ~2.7x |
+| SET p95 latency | 170 us | 217 us | ~1.3x |
+| GET p95 latency | 88 us | 216 us | ~2.5x |
+| SET p99 latency | 432 us | 357 us | 0.8x (within noise) |
+| GET p99 latency | 171 us | 387 us | ~2.3x |
 
 The container overhead comes from two layers: the WSL2 virtual network adapter and the container network namespace. On bare-metal Linux with Docker, expect significantly less overhead.
 
@@ -92,7 +92,7 @@ The container overhead comes from two layers: the WSL2 virtual network adapter a
 
 ## Memory cap enforcement
 
-Proves that `--memory-limit` is respected and LRU eviction works correctly. Results are identical in both native and container runs.
+Proves that `--memory-limit` is respected and sampled eviction works correctly. Results are identical in both native and container runs.
 
 **Setup:** 2 MiB memory limit, inserting 4,000 keys with 1 KiB values each (~4 MiB of data into a 2 MiB store).
 
@@ -101,26 +101,25 @@ Proves that `--memory-limit` is respected and LRU eviction works correctly. Resu
 | Keys inserted | 4,000 |
 | Data attempted | ~4 MiB |
 | Memory limit | 2,097,152 bytes (2 MiB) |
-| Final usage | 2,096,790 bytes (2,048 KiB) |
-| Usage vs. limit | **99.98%** — right at the boundary, never exceeded |
+| Final usage (native) | 2,097,037 bytes |
+| Final usage (container) | 2,097,147 bytes |
+| Usage vs. limit | **~99.99%** — right at the boundary, never exceeded |
 
-### LRU eviction verification
+### Sampled eviction verification
 
-| Key | Status | Explanation |
-|-----|--------|-------------|
-| `key_1` | evicted | Oldest key, first to be reclaimed |
-| `key_2` | evicted | |
-| `key_3` | evicted | |
-| `key_10` | evicted | |
-| `key_50` | evicted | |
-| `key_100` | evicted | Still old enough to be evicted |
-| `key_3996` | **present** | Recent, kept in cache |
-| `key_3997` | **present** | |
-| `key_3998` | **present** | |
-| `key_3999` | **present** | |
-| `key_4000` | **present** | Most recent, always retained |
+Blink-Store uses sampled eviction (similar to Redis). Rather than maintaining a strict LRU list, it samples a fixed number of entries and evicts the least-recently-accessed one. This is probabilistic — older keys are statistically more likely to be evicted, but not guaranteed in exact LRU order.
 
-Early keys are evicted first. Recent keys are always retained. The eviction order matches least-recently-used semantics.
+| Key | Status | Notes |
+|-----|--------|-------|
+| `memtest_1` | evicted | Early key, high eviction probability |
+| `memtest_2` | evicted | |
+| `memtest_3` | evicted or present | Probabilistic — may survive sampling |
+| `memtest_10` | evicted or present | |
+| `memtest_50` | evicted | |
+| `memtest_100` | evicted or present | |
+| `memtest_3996`–`memtest_4000` | **all present** | Recent keys always retained |
+
+The benchmark requires at least half of the early keys to be evicted and all five most recent keys to be present. Both native and container runs passed with 4/6 early keys evicted.
 
 ---
 
@@ -129,7 +128,8 @@ Early keys are evicted first. Recent keys are always retained. The eviction orde
 ### Native
 
 ```bash
-./blink-store serve --tcp 127.0.0.1:8765 --memory-limit 2097152
+cargo build --release
+./target/release/blink-store serve --tcp 127.0.0.1:8765 --memory-limit 2097152
 
 # In another terminal
 python3 scripts/benchmark.py
@@ -138,13 +138,17 @@ python3 scripts/benchmark.py
 ### Container
 
 ```bash
+podman build -t blink-store:bench .
+
 podman run -d --name blink-bench \
   --cpus 1 --memory 2g \
   -p 8765:8765 \
   -e BLINK_MEMORY_LIMIT=2097152 \
-  ghcr.io/ashokdudhade/blink-store:latest
+  blink-store:bench
 
 python3 scripts/benchmark.py
+
+podman stop blink-bench && podman rm blink-bench
 ```
 
 Replace `podman` with `docker` if using Docker. The benchmark script lives at [`scripts/benchmark.py`](https://github.com/ashokdudhade/blink-store/blob/main/scripts/benchmark.py).
