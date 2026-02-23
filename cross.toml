@@ -1,0 +1,22 @@
+# Cross-compilation targets (use: cross build --target <target>)
+# Linux (musl): x86_64-unknown-linux-musl, aarch64-unknown-linux-musl
+# Windows:     x86_64-pc-windows-msvc, aarch64-pc-windows-msvc
+# macOS:       x86_64-apple-darwin,    aarch64-apple-darwin
+
+[build]
+default-target = "x86_64-unknown-linux-gnu"
+
+[target.x86_64-unknown-linux-musl]
+image = "ghcr.io/cross-rs/cross-x86_64-unknown-linux-musl:latest"
+
+[target.aarch64-unknown-linux-musl]
+image = "ghcr.io/cross-rs/cross-aarch64-unknown-linux-musl:latest"
+
+[target.x86_64-pc-windows-msvc]
+image = "ghcr.io/cross-rs/cross-x86_64-pc-windows-msvc:latest"
+
+[target.aarch64-apple-darwin]
+image = "ghcr.io/cross-rs/cross-aarch64-apple-darwin:latest"
+
+[target.x86_64-apple-darwin]
+image = "ghcr.io/cross-rs/cross-x86_64-apple-darwin:latest"

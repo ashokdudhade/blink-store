@@ -1,0 +1,29 @@
+[package]
+name = "blink-store"
+version = "0.1.0"
+edition = "2021"
+description = "In-memory key-value store with LRU eviction and memory-cap enforcement"
+
+[dependencies]
+# Async runtime
+tokio = { version = "1", features = ["sync", "rt-multi-thread", "macros", "time", "fs", "net", "signal", "io-util"] }
+# Errors
+thiserror = "1"
+anyhow = "1"
+# Concurrency
+dashmap = "6"
+# LRU cache (for eviction order)
+lru = "0.12"
+# Logging
+tracing = "0.1"
+tracing-appender = "0.2"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+# Async trait
+async-trait = "0.1"
+# CLI
+clap = { version = "4", features = ["derive"] }
+# Protocol (base64 for VALUE)
+base64 = "0.22"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
