@@ -70,6 +70,11 @@ const config: Config = {
           label: 'Docs',
         },
         {
+          to: '/docs/introduction',
+          position: 'left',
+          label: 'Introduction',
+        },
+        {
           to: '/docs/benchmarks',
           position: 'left',
           label: 'Benchmarks',
