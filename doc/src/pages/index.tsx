@@ -3,15 +3,22 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import CodeBlock from '@theme/CodeBlock';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 function HeroSection() {
   const {siteConfig} = useDocusaurusContext();
+  const logoUrl = useBaseUrl('/img/logo.png');
   return (
     <header className="hero hero--primary">
-      <div className="container">
+      <div className="container" style={{textAlign: 'center'}}>
+        <img
+          src={logoUrl}
+          alt="Blink-Store Logo"
+          style={{width: 140, height: 140, marginBottom: '1rem'}}
+        />
         <h1 className="hero__title">{siteConfig.title}</h1>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div style={{display: 'flex', gap: '1rem', marginTop: '1.5rem'}}>
+        <div style={{display: 'flex', gap: '1rem', marginTop: '1.5rem', justifyContent: 'center'}}>
           <Link className="button button--secondary button--lg" to="/docs/introduction">
             Get Started
           </Link>

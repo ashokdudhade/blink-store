@@ -48,6 +48,10 @@ const config: Config = {
     },
     navbar: {
       title: 'Blink-Store',
+      logo: {
+        alt: 'Blink-Store Logo',
+        src: 'img/logo.png',
+      },
       items: [
         {
           type: 'docSidebar',
